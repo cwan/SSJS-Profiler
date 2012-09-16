@@ -1,7 +1,7 @@
 SSJS-Profiler
 =============
 
-[intra-mart](http://www.intra-mart.jp/) SSJS (Server Side JavaScript) の簡易プロファイラです。
+[intra-mart](http://www.intra-mart.jp/) SSJS (Server Side JavaScript) / Function Container の簡易プロファイラです。
 
 function 単位の実行回数および処理時間の合計を調べることができます。
 
@@ -96,3 +96,6 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 
 ### Ver.1.0.0 (2012-09-09)
 - 初期リリース
+
+## Keywords
+intra-mart, intramart, イントラマート, プロファイラ, profiler, JavaScript
