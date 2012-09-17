@@ -25,13 +25,112 @@ Resource Service のルートソースディレクトリ (pages/src 等) に、�
 
 ### 詳細な設定
 
-*あとで書きます*
-
 #### profiler_def.js の設定
+
+profiler_def.js には、プロファイル対象が定義されます。（session.js から読み込まれます）
+
+**isProfiled**
+
+引数の jssp パスをプロファイル対象とするならば true を返します。  
+配布版のソースでは、全てのパスがプロファイル対象となります。  
+特定のパス（機能）だけをプロファイル対象とする場合は、以下のように設定してください。
+
+    // プロファイル対象のパス
+    var includePaths = [
+        /^startpack\/.+/,
+        /^workflow\/.+/
+    ];
+    
+    // includePathPatternsの中で、除外するパス
+    var excludePaths = [
+        "workflow/user/apply/apply_list"
+    ];
+    
+includePaths および excludePaths には、プロファイル対象とするパス・除外するパスを、それぞれ正規表現または文字列でしてします。文字列で指定した場合は、完全一致で比較されます。  
+includePaths のいずれかに一致し、かつ excludePaths のいずれにも一致しないパスがプロファイル対象となります。
+
+**getExcludeFunctions**
+
+引数の jssp パスをプロファイルする際に、除外する function 名を定義します。  
+例えば、インスタンス化して使用する function などを除外するときに使用します。（[制限事項および注意事項](#制限事項および注意事項)参照）
+
+**profileLibraries**
+
+ライブラリ function などをプロファイル対象とするときに使用します。  
+配布版のソースでは、Procedure で定義された function 全てをプロファイル対象としています。
 
 #### Profiler を直接使用する方法
 
+session.js と profiler_def.js を使用すると、プロファイラの設定を自動的に行うことができますが、Profiler オブジェクトを使用して明示的にプロファイル対象を指定することも可能です。
+
+    // profiler.jsの読み込み
+    // include("profiler");
+    
+    // プロファイラインスタンスの生成
+    var profiler = new Procedure.Profiler();
+    
+    // 特定オブジェクトのすべての function をプロファイル対象とするならば、addAll を使用する
+    // 第1引数:レシーバオブジェクト、第2引数:ログ出力時の判別に使用するレシーバ名（オプション）
+    profiler.addAdd(this, Web.current());
+    
+    // 特定の function だけプロファイル対象とするならば、add を使用する
+    // 第1引数:レシーバオブジェクト、第2引数:function、第2引数:ログ出力時の判別に使用するレシーバ名（オプション）
+    profiler.add(Procedure.IspUtil, Procedure.IspUtil.toJSONString, "IspUtil");
+    
+    // Java で実装された API をプロファイル対象とする
+    // この場合、addAll は不可。（「制限事項および注意事項」参照）
+    var manager = new ISPBulletinManager();
+    profiler.add(manager, manager.getBulletinCls, "ISPBulletinManager");
+    
+    // プロファイルレポートをログに出力する
+    profiler.report();
+    
+    // reportOnClose を実行すると、close の中で自動的に report() を実行するようになる
+    profiler.reportOnClose(this);
+
 #### ストップウォッチの使用方法
+
+function よりも細かい粒度で測定を行いたい場合は、ストップウォッチが使用できます。  
+profiler オブジェクトの stopWatch メソッドの第1引数に与えられた文字列毎に、実行回数と処理時間の合計が取得されます。  
+レポートの出力方法は通常のプロファイラと同じです。  
+
+**start / stop を使用する方法**
+
+    var profiler = new Procedure.Profiler();
+    
+    profiler.stopWatch("処理1").start();  // 測定開始
+    
+    // 測定を行いたい処理
+    doSomething1();
+    doSomething2();
+    
+    profiler.stopWatch("処理1").stop();  // 測定終了
+    
+    for (var i = 0; i < len; i++) {
+        profiler.start("処理2").start();  // 測定開始
+        
+        // 測定を行いたい処理
+        doSomething3();
+        doSomething4();
+        
+        profiler.stopWatch("処理2").stop();  // 測定終了
+    }
+    
+    
+**内部関数を使用する方法**
+
+    var profiler = new Procedure.Profiler();
+    
+    profiler.stopWatch("処理3", function() {
+    
+        // 測定を行いたい処理
+        doSomething1();
+        doSomething2();
+        
+        // 注: ここで変数の宣言を行っていると、外側のスコープからは参照できなくなります
+    });
+    
+stopWatch メソッドの別名として、sw を使用することも可能です。    
 
 ## 実行方法
 
@@ -71,11 +170,15 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 
 右端の項は、functionまたはストップウォッチの処理時間の合計（ミリ秒）です。
 
-## 制限事項
+## 制限事項および注意事項
 
+ - プロファイラを使用することによって、パフォーマンスはかなり低下しますので、測定される処理時間は実際のものより長くなります。
  - jsspRpc の場合には、プロファイラが自動的に設定されません(session.js が実行されないため）。
  - 再帰呼び出しの場合には、処理時間が重複して計上されます。
- - インスタンス化して使用するfunctionには、プロファイラを設定することはできません。
+ - インスタンス化して使用する function には、プロファイラを設定することはできません。
+ - Java で実装された API のプロファイルを取得する場合、プロトタイプに対してプロファイラを設定することはできません。インスタンスに対して設定することは可能です。ただし、addAll や addAllExclude で一括設定をすることはできず、add で関数毎にプロファイラを設定する必要があります。
+ - system-install.xml に定義して使用する JavaScript API に対してプロファイラを設定することはできません。また、`Module.*` の API や Imart （カスタムタグ）に対してプロファイラを設定することもできません。（API の実装にプロファイラを埋め込むことはできます）
+ - インスタンスを生成せず、static で使用するライブラリに対してプロファイラを適用した場合、Application Runtime を再起動するまでプロファイラが適用されたままになります。
 
 ## 動作環境
 
