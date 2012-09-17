@@ -109,8 +109,12 @@ function profileLibraries(profiler) {
 	// 除外リスト
 	var exclusionFunctions = [
 		Procedure.Profiler,
-		Procedure.imAppComSearch.services.util.validate_table_fields.DTFColumnConverter
+		Procedure.CompatibleLogger
 	];
+	
+	if (Procedure.imAppComSearch) {
+		exclusionFunctions.push(Procedure.imAppComSearch.services.util.validate_table_fields.DTFColumnConverter);
+	}
 	
 	// Procedureで定義されたfunctionを再帰的にプロファイル設定する
 	(function(receiver, receiverName) {

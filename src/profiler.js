@@ -13,6 +13,10 @@
  */
 
 function init() {
+
+	if (typeof Procedure.CompatibleLogger === "undefined") {
+		include("compatible_logger");
+	}
 	
 	Procedure.define("Profiler", Profiler);
 }
@@ -26,7 +30,8 @@ function Profiler(name) {
 	
 	this.CONTENT_ID = "profiler";
 	
-	this.logger = Logger.getLogger(this.CONTENT_ID);
+	this.logger = Procedure.CompatibleLogger.get(this.CONTENT_ID);
+	
 	this.profilerName = name || Web.current();
 }
 

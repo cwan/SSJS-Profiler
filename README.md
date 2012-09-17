@@ -182,10 +182,10 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 
 ## 動作環境
 
- - intra-mart WebPlatform 7.2
+ - intra-mart WebPlatform 6.1, 7.2
  - IM-共通マスタ 7.2
  - IM-Workflow 7.2
- - Intranet Startpack 7.1
+ - Intranet Startpack 6.1, 7.1
 
 **注意**
  - 上記以外のプロダクト・バージョンは動作確認を行なっていません（動作する可能性はあります）。
@@ -196,6 +196,9 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 [Apache License, Version 2.0](https://github.com/cwan/SSJS-Profiler/blob/master/LICENSE.txt)
 
 ## 更新履歴
+
+### Ver.1.0.1 (2012-09-18)
+- #1 Ver.6.x に対応
 
 ### Ver.1.0.0 (2012-09-09)
 - 初期リリース
