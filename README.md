@@ -11,6 +11,7 @@ function 単位の実行回数および処理時間の合計を調べること�
 
 Resource Service のルートソースディレクトリ (pages/src 等) に、以下のファイルを配置してください
 
+ - compatible_logger.js
  - profiler.js
  - profiler_def.js
  - session.js
