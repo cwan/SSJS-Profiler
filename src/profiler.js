@@ -140,7 +140,7 @@ Profiler.prototype.addAllExclude = function addAllExclude(receiver, excludeFunct
 		}
 		
 		if (!exclude) {
-			this.add(receiver, receiver[property], receiverName);
+			this.add(receiver, receiver[property], receiverName, property);
 		}
 	}
 	
@@ -154,9 +154,10 @@ Profiler.prototype.addAllExclude = function addAllExclude(receiver, excludeFunct
  * @param receiver レシーバオブジェクト
  * @param func Functionオブジェクト
  * @param receiverName レシーバ名（ログ出力時の判別用。オプション）
+ * @param functionName function名（省略時はfuncのnameプロパティが適用される。無名関数の場合は必須）
  * @retunn 自オブジェクト
  */
-Profiler.prototype.add = function add(receiver, func, receiverName) {
+Profiler.prototype.add = function add(receiver, func, receiverName, functionName) {
 	
 	if (!this.logger.isInfoEnabled()) {
 		return this;
@@ -183,11 +184,13 @@ Profiler.prototype.add = function add(receiver, func, receiverName) {
 	} catch (e) {
 	}
 	
-	if (func.name === "forward" || func.name === "__original_forward") {
+	functionName = functionName || func.name;
+	
+	if (functionName === "forward" || functionName === "__original_forward") {
 		return this;
 	}
 	
-	if (receiver[func.name] && receiver[func.name].__profiler_weaved__) {
+	if (receiver[functionName] && receiver[functionName].__profiler_weaved__) {
 		// オーバーライド済み
 		return this;
 	}
@@ -195,7 +198,7 @@ Profiler.prototype.add = function add(receiver, func, receiverName) {
 	var self = this;
 	
 	// 関数をオーバーライドして、処理時間の測定を行う
-	receiver[func.name] = function() {
+	receiver[functionName] = function() {
 		
 		var start = +new Date;
 		
@@ -217,7 +220,7 @@ Profiler.prototype.add = function add(receiver, func, receiverName) {
 			} else {
 				functionStats[func] = {
 					receiverName : receiverName,
-					functionName : func.name,
+					functionName : functionName,
 					count : 1,
 					elapsedTime : elapsedTime
 				};
@@ -226,7 +229,7 @@ Profiler.prototype.add = function add(receiver, func, receiverName) {
 	};
 	
 	
-	receiver[func.name].__profiler_weaved__ = true;
+	receiver[functionName].__profiler_weaved__ = true;
 	
 	return this;
 };

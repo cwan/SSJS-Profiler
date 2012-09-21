@@ -116,16 +116,14 @@ function profileLibraries(profiler) {
 		exclusionFunctions.push(Procedure.imAppComSearch.services.util.validate_table_fields.DTFColumnConverter);
 	}
 	
-	// Procedureで定義されたfunctionを再帰的にプロファイル設定する
-	(function(receiver, receiverName) {
+	
+	// Procedure・Moduleで定義されたfunctionを再帰的にプロファイル設定する
+	
+	function profileProceduresRecursive(receiver, receiverName) {
 	
 		for (var p in receiver) {
 		
 			var func = receiver[p];
-			
-			if (!func) {
-				continue;
-			}
 			
 			var exclude = false;
 			
@@ -137,13 +135,32 @@ function profileLibraries(profiler) {
 			}
 			
 			if (typeof func === "function" && !exclude) {
-				profiler.add(receiver, func, receiverName);
+				profiler.add(receiver, func, receiverName, p);
 			}
 			
 			if (!exclude) {
 				arguments.callee(func, receiverName + "." + p);
 			}
 		}
+	};
 	
-	})(Procedure, "Procedure");
+	profileProceduresRecursive(Procedure, "Procedure");
+	profileProceduresRecursive(Module, "Module");
+	
+	
+	// system-install*.xmlで定義されたAPIにプロファイル設定する
+	
+	function profileApi(apiName) {
+		
+		if (eval("typeof " + apiName)) {
+			profiler.addAll(eval(apiName), apiName);
+		}
+	}
+
+	profileApi("ImJson");
+	profileApi("ImDepartment");
+	profileApi("ImRole");
+	profileApi("ImPost");
+	profileApi("ImPublicGroup");
+	profileApi("ImSelectCondition");
 }
