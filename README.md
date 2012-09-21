@@ -143,6 +143,7 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 
 画面から操作を行うと、以下の様なログ（標準設定では、stdout.log と system.log） が出力されるようになります。
 
+    SSJS Profiling report : workflow/user/process/process_list
      | FUNCTION / STOPWATCH NAME                                        | COUNT | TIME [ms] | 
      | ImJson.checkJSONString                                           |     2 |         5 | 
      | ImJson.parseJSON                                                 |     2 |         6 | 
