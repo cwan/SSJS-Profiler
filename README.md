@@ -9,7 +9,7 @@ function 単位の実行回数および処理時間の合計を調べること�
 
 ## 1. 設定方法
 
-### 1.1. インストール
+### <a name="install"></a>1.1. インストール
 
 Resource Service のルートソースディレクトリ (pages/src 等) に、以下のファイルを配置してください
 
@@ -26,7 +26,9 @@ Resource Service のルートソースディレクトリ (pages/src 等) に、�
 
 配置したソースファイルを削除した後、intra-mart を再起動してください。
 
-### 1.3. 詳細な設定
+### 1.3. 詳細設定
+
+[インストール](#install)を行うだけでプロファイラが使えるようになりますが、以下の設定によってプロファイラの動作を細かく制御することができます。
 
 #### 1.3.1. profiler_def.js の設定
 
@@ -141,37 +143,54 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 
 画面から操作を行うと、以下の様なログ（標準設定では、stdout.log と system.log） が出力されるようになります。
 
-    SSJS Profiling report : workflow/user/process/process_list
-     | FUNCTION / STOPWATCH NAME                                 | COUNT | TIME [ms] | 
-     | workflow/user/process/process_list.makeValidation         |     1 |         0 | 
-     | Procedure.imw_user_list_utils.getListDisplayPattern       |     1 |        94 | 
-     | Procedure.imw_utils.getValue                              |     7 |         1 | 
-     | Procedure.imw_paging_utils.createSortIconParts            |    17 |         7 | 
-     | Procedure.imw_user_list_utils.setListPatternHeader        |     1 |        60 | 
-     | workflow/user/process/process_list.getHeaderInfo          |     1 |        61 | 
-     | Procedure.imw_user_list_utils.getMatterPropertyCodes      |     1 |         0 | 
-     | workflow/user/process/process_list.setListSearchCondition |     1 |         4 | 
-     | Procedure.imw_user_list_utils.setOrderCondition           |     1 |        16 | 
-     | Procedure.imw_paging_utils.adjustPagingNumber             |     1 |         1 | 
-     | workflow/user/process/process_list.getDisplayCondition    |     1 |         1 | 
-     | Procedure.imw_paging_utils.createPagingParts              |     1 |         0 | 
-     | Procedure.imw_utils.makeHiddenObject                      |     2 |         1 | 
-     | workflow/user/process/process_list.init                   |     1 |       352 | 
+     | FUNCTION / STOPWATCH NAME                                        | COUNT | TIME [ms] | 
+     | ImJson.checkJSONString                                           |     2 |         5 | 
+     | ImJson.parseJSON                                                 |     2 |         6 | 
+     | Procedure.imw_paging_utils.initActionRefresh                     |     1 |         0 | 
+     | ImJson.escapeData                                                |    42 |        14 | 
+     | ImJson.toJSONString                                              |     2 |        32 | 
+     | workflow/user/process/process_list.makeValidation                |     1 |         1 | 
+     | Procedure.imw_user_list_utils.getListDisplayPattern              |     1 |        25 | 
+     | Procedure.imw_utils.getValue                                     |     7 |         0 | 
+     | Procedure.imw_paging_utils.createSortIconParts                   |    17 |         4 | 
+     | Procedure.imw_user_list_utils.setListPatternHeader               |     1 |        30 | 
+     | workflow/user/process/process_list.getHeaderInfo                 |     1 |        30 | 
+     | Procedure.imw_user_list_utils.getMatterPropertyCodes             |     2 |         1 | 
+     | workflow/user/process/process_list.setListSearchCondition        |     1 |         1 | 
+     | Procedure.imw_user_list_utils.setOrderCondition                  |     1 |         4 | 
+     | Procedure.imw_paging_utils.adjustPagingNumber                    |     1 |         0 | 
+     | Procedure.imw_user_list_utils.getListColumnObject                |   340 |        66 | 
+     | Procedure.imw_utils.escapeHTML                                   |   360 |        69 | 
+     | Procedure.imw_user_list_utils.createListProcessLink              |    20 |        39 | 
+     | Procedure.imw_user_list_utils.setListColumnAttribute             |   340 |        58 | 
+     | Procedure.imw_user_list_utils.createListTransferLink             |    20 |        21 | 
+     | Procedure.imw_user_list_utils.defaultListColumnObjectPriority    |    20 |         2 | 
+     | Procedure.imw_datetime_utils.getBaseDateFormat                   |    80 |        14 | 
+     | Procedure.imw_user_list_utils.defaultListColumnObjectStatus      |    20 |         3 | 
+     | Procedure.imw_user_list_utils.defaultListColumnObjectProcessAuth |    20 |         4 | 
+     | Procedure.imw_user_list_utils.createListDetailLink               |    20 |        21 | 
+     | Procedure.imw_user_list_utils.createListFlowLink                 |    20 |        12 | 
+     | Procedure.imw_user_list_utils.createListHistoryLink              |    20 |        12 | 
+     | workflow/user/process/process_list.getDisplayCondition           |     1 |       589 | 
+     | Procedure.imw_paging_utils.createPagingParts                     |     1 |         0 | 
+     | Procedure.imw_utils.makeHiddenObject                             |     2 |         2 | 
+     | workflow/user/process/process_list.init                          |     1 |       790 | 
+     | workflow/user/process/process_list.actionRefresh                 |     1 |     1,007 | 
+     | [StopWatch].getProcessListCount                                  |     1 |         8 | 
 
-1行目の : の右側は、リクエストが送信された JSSP のパスです。
+1行目の : の右側は、リクエストが送信された JSSP のパスです。  
 基本的には、このパスに対するリクエストを受信してからレスポンスを返すまでに実行された処理の統計情報がログに出力されます。
 
-2行目はヘッダ行です。  
-3行目からがプロファイル結果です。
+2行目はヘッダ行です。
 
-左端の項は、functionまたはストップウォッチの名称です。
+3行目からがプロファイル結果です。  
+左端の項 (_FUNCTION / STOPWATCH NAME_) は、functionまたはストップウォッチの名称です。
  - `<JSSPパス名>.<function名>`
- - `<Proceder定義オブジェクト名>.<function名>`
+ - `<Proceder/Module定義オブジェクト名>.<function名>`
  - `[StopWatch].<ストップウォッチ名>`
-
-中央の項は、functionまたはストップウォッチの実行回数です。
-
-右端の項は、functionまたはストップウォッチの処理時間の合計（ミリ秒）です。
+ 
+中央の項 (_COUNT_) は、functionまたはストップウォッチの実行回数です。  
+右端の項 (_TIME_)は、functionまたはストップウォッチの処理時間の合計（ミリ秒）です。
 
 ## <a name="restrictions"></a>3. 制限事項および注意事項
 
@@ -180,7 +199,6 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
  1. 再帰呼び出しの場合には、処理時間が重複して計上されます。
  1. インスタンス化して使用する function には、プロファイラを設定することはできません。
  1. Java で実装された API のプロファイルを取得する場合、プロトタイプに対してプロファイラを設定することはできません。インスタンスに対して設定することは可能です。ただし、addAll や addAllExclude で一括設定をすることはできず、add で関数毎にプロファイラを設定する必要があります。
- 1. system-install.xml に定義して使用する JavaScript API に対してプロファイラを設定することはできません。また、`Module.*` の API や Imart （カスタムタグ）に対してプロファイラを設定することもできません。（API の実装にプロファイラを埋め込むことはできます）
  1. インスタンスを生成せず、static で使用するライブラリに対してプロファイラを適用した場合、Application Runtime を再起動するまでプロファイラが適用されたままになります。
 
 ## 4. 動作環境
@@ -199,6 +217,10 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 [Apache License, Version 2.0](https://github.com/cwan/SSJS-Profiler/blob/master/LICENSE.txt)
 
 ## 6. 更新履歴
+
+### Ver.1.0.2 (2012-09-22)
+- [#2 無名関数に対応](/cwan/SSJS-Profiler/issues/2)
+- [#4 全角文字が含まれるとレポートの桁ぞろえがずれる不具合を修正](/cwan/SSJS-Profiler/issues/4)
 
 ### Ver.1.0.1 (2012-09-18)
 - [#1 Ver.6.x に対応](/cwan/SSJS-Profiler/issues/1)
