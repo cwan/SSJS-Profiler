@@ -283,6 +283,21 @@ Profiler.prototype.report = function report(delimiter) {
 		return;
 	}
 	
+	// 文字列長を取得する（全角文字は2文字分）
+	function getStrLen(s) {
+		
+		if (!s) return 0;
+		
+		var n = 0;
+		
+		for (var i = 0; i < s.length; i++) {
+			var c = s.charCodeAt(i);
+			n += (c < 256 || (c >= 0xff61 && c <= 0xff9f)) ? 1 : 2;
+		}
+		
+		return n;
+	}
+	
 	var buf = [];
 	var i;
 	var lineSeparator = Packages.java.lang.System.getProperty("line.separator", "\n");
@@ -327,7 +342,7 @@ Profiler.prototype.report = function report(delimiter) {
 		row.elapsedTime = Format.fromNumber("#,##0", stat.elapsedTime);
 		
 		if (!delimiter) {
-			maxLenName = Math.max(row.name.length, maxLenName);
+			maxLenName = Math.max(getStrLen(row.name), maxLenName);
 			maxLenCount = Math.max(row.count.length, maxLenCount);
 			maxLenTime = Math.max(row.elapsedTime.length, maxLenTime);
 		}
@@ -347,7 +362,7 @@ Profiler.prototype.report = function report(delimiter) {
 		row.elapsedTime = Format.fromNumber("#,##0", sw.elapsedTime);
 		
 		if (!delimiter) {
-			maxLenName = Math.max(row.name.length, maxLenName);
+			maxLenName = Math.max(getStrLen(row.name), maxLenName);
 			maxLenCount = Math.max(row.count.length, maxLenCount);
 			maxLenTime = Math.max(row.elapsedTime.length, maxLenTime);
 		}
@@ -398,7 +413,7 @@ Profiler.prototype.report = function report(delimiter) {
 			
 			buf[buf.length] = separator;
 			buf[buf.length] = row.name;
-			buf[buf.length] = spacer.substring(row.name.length + spacerLen - maxLenName);
+			buf[buf.length] = spacer.substring(getStrLen(row.name) + spacerLen - maxLenName);
 			buf[buf.length] = separator;
 			
 			if (i !== 0) {
