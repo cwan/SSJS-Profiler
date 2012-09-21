@@ -80,27 +80,37 @@ CompatibleLogger.prototype.log = function log(level, args) {
 
 CompatibleLogger.prototype.trace = function trace() {
 	
-	this.log("TRACE", arguments);
+	if (this.loggable.trace) {
+		this.log("TRACE", arguments);
+	}
 }
 
 CompatibleLogger.prototype.debug = function debug() {
 	
-	this.log("DEBUG", arguments);
+	if (this.loggable.debug) {
+		this.log("DEBUG", arguments);
+	}
 }
 
 CompatibleLogger.prototype.info = function info() {
 	
-	this.log("INFO", arguments);
+	if (this.loggable.info) {
+		this.log("INFO", arguments);
+	}
 }
 
 CompatibleLogger.prototype.warn = function warn() {
 	
-	this.log("WARN", arguments);
+	if (this.loggable.warn) {
+		this.log("WARN", arguments);
+	}
 }
 
 CompatibleLogger.prototype.error = function error() {
 	
-	this.log("ERROR", arguments);
+	if (this.loggable.error) {
+		this.log("ERROR", arguments);
+	}
 }
 
 CompatibleLogger.prototype.isTraceEnabled = function isTraceEnabled() {
