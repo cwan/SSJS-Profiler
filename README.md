@@ -230,4 +230,4 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 - 初期リリース
 
 ## Keywords
-intra-mart, intramart, イントラマート, プロファイラ, profiler, JavaScript
+intra-mart intramart イントラマート プロファイラ profiler JavaScript 性能 Performance パフォーマンス
