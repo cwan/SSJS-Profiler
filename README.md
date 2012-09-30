@@ -118,7 +118,17 @@ _（reportFinally が使用できるのは、Ver.1.0.3 以降です）_
     function apply(parameter,userParameter) {
         ...
 
-#### 1.3.3 ストップウォッチの使用方法
+#### 1.3.3. Java で実装された API のプロファイル
+
+Java で実装された API のプロファイルを取得することも可能です（_Ver.1.0.3 以降_）。
+しかし、プロファイラの設定の処理が重く、初回実行時に時間がかかるため、配布版のソースでは無効になっています。
+
+profiler_def.js の _profileJavaApis 関数の内部を編集し、プロファイルを取得したい API のコメントを外して再起動してください。
+
+    // 例: VirtualFile のプロファイルを有効にする
+    profileInstancializeApis("VirtualFile", [ "append", "directories", "exist", "files", "isDirectory", "isFile", "lastModified", "load", "makeDirectories", "move", "path", "read", "remove", "save", "size", "write", "lists" ]);
+
+#### 1.3.4. ストップウォッチの使用方法
 
 function よりも細かい粒度で測定を行いたい場合は、ストップウォッチが使用できます。  
 profiler オブジェクトの stopWatch メソッドの第1引数に与えられた文字列毎に、実行回数と処理時間の合計が取得されます。  
@@ -220,7 +230,9 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 
 ## <a name="restrictions"></a>3. 制限事項および注意事項
 
- 1. プロファイラを使用することによって、パフォーマンスはかなり低下しますので、測定される処理時間は実際のものより長くなります。特に、session.js でプロファイラの設定を行う場合、画面を最初に表示するときにライブラリのプロファイル設定を行うため、時間がかかります。
+ 1. プロファイラを使用することによって、パフォーマンスはかなり低下しますので、測定される処理時間は実際のものより長くなります。
+特に、session.js でプロファイラの設定を行う場合、画面を最初に表示するときにライブラリのプロファイル設定を行うため、時間がかかります。
+profiler_def.js を編集し、プロファイルの取得が不要な API やパスを除外することで性能は向上します。
  1. jsspRpc の場合には、プロファイラが自動的に設定されません（session.js が実行されないため）。
  1. IM-Workflow のアクション処理やバッチプログラムなど、画面から直接実行されないプログラムには、プロファイラが自動的に設定されません（session.js が実行されないため）。
  1. 再帰呼び出しの場合には、処理時間が重複して計上されます。
@@ -243,6 +255,11 @@ intra-mart を再起動すると、プロファイラの設定が有効になり
 [Apache License, Version 2.0](https://github.com/cwan/SSJS-Profiler/blob/master/LICENSE.txt)
 
 ## 6. 更新履歴
+
+### Ver.1.0.3 (2012-10-01)
+- [#5 intra-mart Ver.6.x でレポートが system.log に出力されない不具合を修正](/cwan/SSJS-Profiler/issues/5)
+- [#6 jsspRpc や IM-Workflow のアクション処理などのプロファイルを比較的簡単に取得する方法を追加（Profiler.reportFinally 追加）](/cwan/SSJS-Profiler/issues/6)
+- [#7 Java で実装された API のプロファイルを取得できるようにした](/cwan/SSJS-Profiler/issues/7)
 
 ### Ver.1.0.2 (2012-09-22)
 - [#2 無名関数に対応](/cwan/SSJS-Profiler/issues/2)
