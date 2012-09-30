@@ -510,6 +510,7 @@ Profiler.prototype.reportOnClose = function reportOnClose(receiver, delimiter) {
 	
 	if (!receiver) {
 		this.logger.error("An argument of reportOnClose is invalid.");
+		return this;
 	}
 	
 	var self = this;
@@ -537,6 +538,49 @@ Profiler.prototype.reportOnClose = function reportOnClose(receiver, delimiter) {
 	
 	return this;
 };
+
+/**
+ * 指定のfunctionを実行したあと、レポートを出力する。
+ * 
+ * @param {Object} receiver レシーバオブジェクト
+ * @param {String} functionName function名
+ * @param {String} delimiter レポートの区切り文字。詳細は、{@link #report}参照。
+ * @returns {Profiler} 自オブジェクト
+ * @since Ver.1.0.3
+ */
+Profiler.prototype.reportFinally = function reportFinally(receiver, functionName, delimiter) {
+	
+	if (!this.logger.isInfoEnabled()) {
+		return this;
+	}
+	
+	if (!receiver) {
+		this.logger.error("An argument 'receiver' of reportFinally is invalid.");
+		return this;
+	}
+	
+	var func = receiver[functionName];
+	
+	if (!func || typeof func !== "function") {
+		this.logger.error("An argument 'func' of reportFinally is invalid.");
+		return this;
+	}
+	
+	var self = this;
+
+	receiver[functionName] = function() {
+		
+		try {
+			return func.apply(this, Array.prototype.slice.call(arguments));
+			
+		} finally {
+			
+			self.report(delimiter);
+		}
+	};
+	
+	return this;
+}
 
 /**
  * @constructor
