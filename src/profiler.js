@@ -12,6 +12,18 @@
  * governing permissions and limitations under the License.
  */
 
+/**
+ * @fileOverview intra-mart SSJS (Server Side JavaScript) のプロファイラ。
+ * 
+ * @see <a href="https://github.com/cwan/SSJS-Profiler">SSJS-Profiler Project</a>
+ * @since Ver.1.0.0
+ */
+
+/**
+ * Profilerクラスの定義を行う。
+ * 
+ * @returns {undefined}
+ */
 function init() {
 
 	if (typeof Procedure.CompatibleLogger === "undefined") {
@@ -22,9 +34,8 @@ function init() {
 }
 
 /**
- * コンストラクタ。
- *
- * @param name プロファイラ名。（オプション。省略時はWeb.current()が適用される）
+ * @constructor
+ * @param {String} name プロファイラ名。省略時はWeb.current()が適用される。
  */
 function Profiler(name) {
 	
@@ -37,6 +48,15 @@ function Profiler(name) {
 
 /**
  * リクエストスコープの関数統計情報を取得する。
+ *
+ * @returns {Object} 関数統計情報の連想配列。
+ *   キー : {Function} 関数オブジェクト
+ *   値 : {
+ *	 	functionName {String} : 関数名,
+ *	 	receiverName {String} : レシーバ名,
+ *	 	count {Number} : 実行回数,
+ *	 	elapsedTime {Number} : 処理時間（ミリ秒）
+ *   }	 
  */
 Profiler.prototype.getFunctionStats = function getFunctionStats() {
 	 
@@ -56,6 +76,10 @@ Profiler.prototype.getFunctionStats = function getFunctionStats() {
 
 /**
  * リクエストスコープのストップウォッチ情報を取得する。
+ *
+ * @returns {Object} ストップウォッチの連想配列。
+ *   キー : {String} ストップウォッチ名
+ *   値 : {StopWatch} ストップウォッチオブジェクト
  */
 Profiler.prototype.getStopWatches = function getStopWatches() {
 	
@@ -76,9 +100,9 @@ Profiler.prototype.getStopWatches = function getStopWatches() {
 /**
  * 引数receiverのすべてのfunctionをプロファイル対象に設定する。
  *
- * @param receiver レシーバオブジェクト
- * @param receiverName レシーバ名（ログ出力時の判別用。オプション）
- * @return 自オブジェクト
+ * @param {Object} receiver レシーバオブジェクト
+ * @param {String} receiverName レシーバ名（ログ出力時の判別用。オプション）
+ * @returns {Profiler} 自オブジェクト
  */
 Profiler.prototype.addAll =	function addAll(receiver, receiverName) {
 	 
@@ -92,10 +116,10 @@ Profiler.prototype.addAll =	function addAll(receiver, receiverName) {
 /**
  * 引数receiverのexcludeFunctionsを除いたすべてのfunctionをプロファイル対象に設定する。
  * 
- * @param receiver レシーバオブジェクト
- * @param excludeFunctions 除外functionまたはfuncion名の配列
- * @param receiverName レシーバ名（ログ出力時の判別用。オプション）
- * @return 自オブジェクト
+ * @param {Object} receiver レシーバオブジェクト
+ * @param {Array<String>} excludeFunctions 除外functionまたはfuncion名の配列
+ * @param {String} receiverName レシーバ名（ログ出力時の判別用。オプション）
+ * @returns {Profiler} 自オブジェクト
  */
 Profiler.prototype.addAllExclude = function addAllExclude(receiver, excludeFunctions, receiverName) {
 	
@@ -151,11 +175,11 @@ Profiler.prototype.addAllExclude = function addAllExclude(receiver, excludeFunct
 /**
  * 1つのfunctionをプロファイル対象にする。
  * 
- * @param receiver レシーバオブジェクト
- * @param func Functionオブジェクト
- * @param receiverName レシーバ名（ログ出力時の判別用。オプション）
- * @param functionName function名（省略時はfuncのnameプロパティが適用される。無名関数の場合は必須）
- * @retunn 自オブジェクト
+ * @param {Object} receiver レシーバオブジェクト
+ * @param {Function} func Functionオブジェクト
+ * @param {String} receiverName レシーバ名（ログ出力時の判別用。オプション）
+ * @param {String} functionName function名（省略時はfuncのnameプロパティが適用される。無名関数の場合は必須）
+ * @retuns {Profiler} 自オブジェクト
  */
 Profiler.prototype.add = function add(receiver, func, receiverName, functionName) {
 	
@@ -238,9 +262,9 @@ Profiler.prototype.add = function add(receiver, func, receiverName, functionName
  * 第2引数のfnTargetが渡されない場合は、引数の識別名のストップウォッチを取得する。
  * 第2引数のfnTargetが渡された場合は、fnTargetを実行し、その処理時間を測定する。
  * 
- * @param stopWatchName ストップウォッチ名
- * @param fnTarget 測定対象の関数（オプション）
- * @return ストップウォッチオブジェクト
+ * @param {String} stopWatchName ストップウォッチ名
+ * @param {Function} fnTarget 測定対象の関数（オプション）
+ * @return {StopWatch} ストップウォッチオブジェクト
  */
 Profiler.prototype.stopWatch =
 Profiler.prototype.sw =	function sw(stopWatchName, fnTarget) {
@@ -275,7 +299,11 @@ Profiler.prototype.sw =	function sw(stopWatchName, fnTarget) {
 
 /**
  * 統計レポートをINFOログに出力する。
- * @return void
+ * 
+ * @param {String} delimiter
+ * 		レポートの区切り文字。例えば、CSV形式で出力したい場合は "," を指定する。
+ * 		省略時は、スペースで桁揃えしたレポートが出力される。
+ * @returns {undefined}
  */
 Profiler.prototype.report = function report(delimiter) {
 	
@@ -448,7 +476,7 @@ Profiler.prototype.report = function report(delimiter) {
 };
 
 /**
- * レポート情報があるならばtrue、なければfalseを返す。
+ * @returns {boolean} レポート情報があるならばtrue、なければfalseを返す。
  */
 Profiler.prototype.hasReport = function hasReport() {
 	
@@ -470,9 +498,9 @@ Profiler.prototype.hasReport = function hasReport() {
 /**
  * close関数実行時に統計レポートをログに出力する場合、closeのレシーバを設定する。
  * 
- * @param receiver レシーバオブジェクト
- * @param delimiter レポートの区切り文字。省略時はスペースで幅をそろえる。
- * @return 自オブジェクト
+ * @param {Object} receiver レシーバオブジェクト
+ * @param {String} delimiter レポートの区切り文字。詳細は、{@link #report}参照。
+ * @returns {Profiler} 自オブジェクト
  */
 Profiler.prototype.reportOnClose = function reportOnClose(receiver, delimiter) {
 	
@@ -511,8 +539,8 @@ Profiler.prototype.reportOnClose = function reportOnClose(receiver, delimiter) {
 };
 
 /**
- * ストップウォッチのコンストラクタ
- * @param stopWatchName ストップウォッチの識別名
+ * @constructor
+ * @param {String} stopWatchName ストップウォッチの識別名
  */
 function StopWatch(stopWatchName, logger) {
 
@@ -525,7 +553,7 @@ function StopWatch(stopWatchName, logger) {
 
 /**
  * ストップウォッチを開始する。
- * @return なし
+ * @returns {undefined}
  */
 StopWatch.prototype.start = function() {
 
@@ -539,7 +567,7 @@ StopWatch.prototype.start = function() {
 
 /**
  * ストップウォッチを停止する。
- * @return なし
+ * @returns {undefined}
  */
 StopWatch.prototype.stop = function() {
 

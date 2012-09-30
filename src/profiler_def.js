@@ -13,8 +13,17 @@
  */
 
 /**
- * 引数のパスがプロファイル対象ならば、trueを返す。
- * @param path
+ * @fileOverview パスや関数がプロファイル対象とするかどうかが定義される。
+ * 
+ * @see <a href="https://github.com/cwan/SSJS-Profiler">SSJS-Profiler Project</a>
+ * @since Ver.1.0.0
+ */
+
+/**
+ * 引数のパスがプロファイル対象かどうかを判定する。
+ * 
+ * @param {String} path SSJSのパス（拡張子は含まない）
+ * @returns {boolean} 引数のパスがプロファイル対象ならば、trueを返す。 
  */
 function isProfiled(path) {
 	
@@ -54,8 +63,9 @@ function isProfiled(path) {
 
 /**
  * 引数のパスに関する除外関数リストを取得する。
- * @param {} path
- * @returns {} 
+ *
+ * @param {String} path SSJSのパス（拡張子は含まない）
+ * @returns {Array<String>} 除外する関数名の配列。
  */
 function getExcludeFunctions(path) {
 
@@ -92,7 +102,9 @@ function getExcludeFunctions(path) {
 
 /**
  * ライブラリのプロファイル設定を行う。
- * @param profiler
+ *
+ * @param {Profiler} profiler プロファイラオブジェクト
+ * @returns {undefined}
  */
 function profileLibraries(profiler) {
 
@@ -142,7 +154,7 @@ function profileLibraries(profiler) {
 				arguments.callee(func, receiverName + "." + p);
 			}
 		}
-	};
+	}
 	
 	profileProceduresRecursive(Procedure, "Procedure");
 	profileProceduresRecursive(Module, "Module");

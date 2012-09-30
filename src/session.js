@@ -12,6 +12,16 @@
  * governing permissions and limitations under the License.
  */
 
+/**
+ * @fileOverview SSJSプロファイラを、profiler_def.jsの定義に従ってAOP的に設定する。
+ * 
+ * ※ session.js は、intra-mart JSSPフレームワークで予約されたファイル名。
+ *    全ての *.jssp, *.jssps リクエストの前に実行される。（*.jssprpcでは実行されない）
+ * 
+ * @see <a href="https://github.com/cwan/SSJS-Profiler">SSJS-Profiler Project</a>
+ * @since Ver.1.0.0
+ */
+
 include("profiler");
 
 var $imSystemPackage = Packages.jp.co.intra_mart.system;
@@ -25,6 +35,11 @@ var $javaClass = {
 	JSSPSourceManager:		$imSystemPackage.jssp.provider.application.JSSPSourceManager
 };
 
+/**
+ * 
+ * @param {Request} request リクエストオブジェクト
+ * @returns {undefined}
+ */
 function init(request) {
 	profile(request);
 }
@@ -32,9 +47,8 @@ function init(request) {
 /*
  * プロファイルを行う。
  *
- * 制限事項:
- * 		・jsspRpcの場合はsession.jsが実行されないのでプロファイル不可
- *
+ * @param {Request} request リクエストオブジェクト
+ * @returns {undefined}
  */
 function profile(request) {
 	
@@ -105,9 +119,10 @@ function profile(request) {
 
 /**
  * pathがプロファイル対象かどうか判定する。
- * @param profilerDef
- * @param path
- * @return true:プロファイル対象である | false:ロファイル対象ではない
+ *
+ * @param {Object} profilerDef プロファイラ対象定義オブジェクト
+ * @param {String} path JSSPパス（拡張子は含まない）
+ * @returns {boolean} true:プロファイル対象である | false:ロファイル対象ではない
  */
 function isProfiled(profilerDef, path) {
 	
@@ -116,9 +131,10 @@ function isProfiled(profilerDef, path) {
 
 /**
  * pathのプロファイル例外関数名の配列を取得する。
- * @param profilerDef
- * @param path
- * @return プロファイル例外関数名の配列（対象がない場合は空配列）
+ *
+ * @param {Object} profilerDef プロファイラ対象定義オブジェクト
+ * @param {String} path JSSPパス（拡張子は含まない）
+ * @returns {Array<String>} プロファイル例外関数名の配列（対象がない場合は空配列）
  */
 function getExcludeFunctions(profilerDef, path) {
 	
@@ -127,11 +143,12 @@ function getExcludeFunctions(profilerDef, path) {
 
 /**
  * pathを実行し、プロファイルを行う。また、結果をレスポンスに書き出す。
- * @param profiler
- * @param profilerDef
- * @param path
- * @param args pathの引数（配列）
- * @return
+ *
+ * @param {Profiler} profiler プロファイラオブジェクト
+ * @param {Object} profilerDef プロファイラ対象定義オブジェクト
+ * @param {String} path JSSPパス（拡張子は含まない）
+ * @param {Array<Object>} args pathの引数
+ * @returns {undefined}
  */
 function executeAndProfile(profiler, profilerDef, path, args) {
 	
@@ -177,9 +194,10 @@ function executeAndProfile(profiler, profilerDef, path, args) {
  
 /**
  * JSファイルが存在するかチェックする
- * @param path
- * @param locale
- * @return
+ *
+ * @param {String} path 確認対象のJSファイルパス（拡張子は含まない）
+ * @param {Object} locale ロケールオブジェクト
+ * @returns {boolean} JSファイルが存在するならばtrueを返す。
  */
 function existsJsSource(path, locale) {
 	
@@ -195,7 +213,11 @@ function existsJsSource(path, locale) {
 	
 	return true;
 }
- 
+
+/**
+ * レポートの出力を行う。
+ * @returns {undefined}
+ */
 function close() {
 	
 	var profiler = new Procedure.Profiler(Web.current());
