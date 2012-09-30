@@ -103,9 +103,7 @@ function profile(request) {
 			
 			var path = imActive || currentPath;
 			
-			var locale = $javaClass.Context.getCurrentContext().getLocale();
-			
-			var scriptScope = $javaClass.JSSPScriptBuilder.getBuilder(locale).getScriptScope(path);
+			var scriptScope = $javaClass.JSSPScriptBuilder.getBuilder().getScriptScope(path);
 			
 			profiler.addAllExclude(scriptScope, getExcludeFunctions(profilerDef, path), path);
 			
@@ -153,10 +151,9 @@ function getExcludeFunctions(profilerDef, path) {
 function executeAndProfile(profiler, profilerDef, path, args) {
 	
 	var ctx = $javaClass.Context.getCurrentContext();
-	var locale = ctx.getLocale();
 	
-	if (existsJsSource(path, locale)) {
-		var scriptScope = $javaClass.JSSPScriptBuilder.getBuilder(locale).getScriptScope(path);
+	if (existsJsSource(path)) {
+		var scriptScope = $javaClass.JSSPScriptBuilder.getBuilder().getScriptScope(path);
 		
 		profiler.addAllExclude(scriptScope, getExcludeFunctions(profilerDef, path), path);
 		
@@ -167,7 +164,7 @@ function executeAndProfile(profiler, profilerDef, path, args) {
 	}
 	
 	try {
-		var view = $javaClass.JSSPViewBuilder.getBuilder(locale).getComposition(path);
+		var view = $javaClass.JSSPViewBuilder.getBuilder().getComposition(path);
 		
 		if (scriptScope) {
 			var before = $javaClass.ScriptScope.entry(scriptScope);
@@ -196,11 +193,12 @@ function executeAndProfile(profiler, profilerDef, path, args) {
  * JSファイルが存在するかチェックする
  *
  * @param {String} path 確認対象のJSファイルパス（拡張子は含まない）
- * @param {Object} locale ロケールオブジェクト
  * @returns {boolean} JSファイルが存在するならばtrueを返す。
  */
-function existsJsSource(path, locale) {
+function existsJsSource(path) {
 	
+	var locale = $javaClass.Context.getCurrentContext().getLocale();
+	 
 	try {
 		$javaClass.JSSPSourceManager.getSourceManager(locale).getSource(path + ".js");
 	} catch (e) {
