@@ -68,30 +68,55 @@ includePaths のいずれかに一致し、かつ excludePaths のいずれに�
 
 session.js と profiler_def.js を使用すると、プロファイラの設定を自動的に行うことができますが、Profiler オブジェクトを使用して明示的にプロファイル対象を指定することも可能です。
 
-    // profiler.jsの読み込み
-    // include("profiler");
+    // profiler.js の読み込み
+    include("profiler");
     
     // プロファイラインスタンスの生成
     var profiler = new Procedure.Profiler();
     
     // 特定オブジェクトのすべての function をプロファイル対象とするならば、addAll を使用する
-    // 第1引数:レシーバオブジェクト、第2引数:ログ出力時の判別に使用するレシーバ名（オプション）
+    // 第1引数: レシーバオブジェクト、第2引数: ログ出力時の判別に使用するレシーバ名（オプション）
     profiler.addAdd(this, Web.current());
     
     // 特定の function だけプロファイル対象とするならば、add を使用する
-    // 第1引数:レシーバオブジェクト、第2引数:function、第2引数:ログ出力時の判別に使用するレシーバ名（オプション）
-    profiler.add(Procedure.IspUtil, Procedure.IspUtil.toJSONString, "IspUtil");
-    
-    // Java で実装された API をプロファイル対象とする
-    // この場合、addAll は不可。（「制限事項および注意事項」参照）
-    var manager = new ISPBulletinManager();
-    profiler.add(manager, manager.getBulletinCls, "ISPBulletinManager");
+    // 第1引数: レシーバオブジェクト、第2引数: function、第3引数: ログ出力時の判別に使用するレシーバ名（オプション）、
+    // 第4引数: function 名（第2引数の name プロパティが取得できない場合に必要）
+    profiler.add(objA, funcX, "ClaasA", "funcX");
     
     // プロファイルレポートをログに出力する
     profiler.report();
     
     // reportOnClose を実行すると、close の中で自動的に report() を実行するようになる
     profiler.reportOnClose(this);
+
+IM-Workflow の標準画面からの申請などは、jsspRpc で行われますが、[制限事項および注意事項](#restrictions)にある通り、
+jsspRpc は自動的にプロファイルの設定を行うことはできません。また、申請アクション処理なども同様です。
+
+これらの処理のプロファイルを取得するには、以下のようにソースに手を加えます。  
+_（reportFinally が使用できるのは、Ver.1.0.3 以降です）_
+
+`pages/platform/src/workflow/common/proc/exec/apply_jssp.js`
+
+    // グローバルスコープに、以下の4行を追加
+    var path = "workflow/common/proc/exec/apply_jssp";  // jsspRpc では Web.current() が取得できないので、パスを明示的に指定する
+    var profiler = new Procedure.Profiler(path);
+    profiler.add(this, apply, path, "apply");   // プロファイルを取得する function を指定
+    profiler.reportFinally(this, "apply");      // apply の最後にレポートを出力する
+
+    function apply(request){
+        ...
+
+`pages/src/sample/workflow/purchase/action/ActionProcess1.js` _（任意のアクション処理）_
+
+    // グローバルスコープに、以下の2行を追加
+    var profiler = new Procedure.Profiler();
+    profiler.addAll(this, "sample/workflow/purchase/action/ActionProcess1");    // この js 内に定義された全ての function のプロファイルを取得
+    
+    // ※ レポート出力は、apply_jssp で行われるので、ここに reportFinally などを記述する必要はない
+    
+    // 申請
+    function apply(parameter,userParameter) {
+        ...
 
 #### 1.3.3 ストップウォッチの使用方法
 
