@@ -61,8 +61,31 @@ includePaths のいずれかに一致し、かつ excludePaths のいずれに�
 
 **profileLibraries**
 
-ライブラリ function などをプロファイル対象とするときに使用します。  
-配布版のソースでは、Procedure や Module で定義された function 全てをプロファイル対象としています。
+ライブラリ function などをプロファイル対象とするときに使用します。
+
+**_profileJsApis**
+
+JavaScript で実装された API にプロファイラを設定します。
+配布版のソースでは、以下のオブジェクトをプロファイル対象としています。
+
+- Procedure.**
+- Module.**
+- ImJson.*
+- ImDepartment.*
+- ImRole.*
+- ImPost.*
+- ImPublicGroup.*
+- ImSelectCondition.*
+
+**_profileJavaApis**
+
+Java で実装された API プロファイラを設定します（_Ver.1.0.3 以降_）。
+しかし、プロファイラの設定の処理が重く、初回実行時に時間がかかるため、配布版のソースでは全て無効になっています。
+
+この関数の内部を編集し、プロファイルを取得したい API のコメントを外して再起動してください。
+
+    // 例: VirtualFile のプロファイルを有効にする
+    profileInstancializeApis("VirtualFile", [ "append", "directories", "exist", "files", "isDirectory", "isFile", "lastModified", "load", "makeDirectories", "move", "path", "read", "remove", "save", "size", "write", "lists" ]);
 
 #### 1.3.2. Profiler を直接使用する方法
 
@@ -118,17 +141,7 @@ _（reportFinally が使用できるのは、Ver.1.0.3 以降です）_
     function apply(parameter,userParameter) {
         ...
 
-#### 1.3.3. Java で実装された API のプロファイル
-
-Java で実装された API のプロファイルを取得することも可能です（_Ver.1.0.3 以降_）。
-しかし、プロファイラの設定の処理が重く、初回実行時に時間がかかるため、配布版のソースでは無効になっています。
-
-profiler_def.js の _profileJavaApis 関数の内部を編集し、プロファイルを取得したい API のコメントを外して再起動してください。
-
-    // 例: VirtualFile のプロファイルを有効にする
-    profileInstancializeApis("VirtualFile", [ "append", "directories", "exist", "files", "isDirectory", "isFile", "lastModified", "load", "makeDirectories", "move", "path", "read", "remove", "save", "size", "write", "lists" ]);
-
-#### 1.3.4. ストップウォッチの使用方法
+#### 1.3.3. ストップウォッチの使用方法
 
 function よりも細かい粒度で測定を行いたい場合は、ストップウォッチが使用できます。  
 profiler オブジェクトの stopWatch メソッドの第1引数に与えられた文字列毎に、実行回数と処理時間の合計が取得されます。  
