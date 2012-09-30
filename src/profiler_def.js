@@ -117,62 +117,59 @@ function profileLibraries(profiler) {
 	
 	Procedure.define(doneCheckKey, true);
 	
+	// 静的に（インスタンスを作らずに）使用するAPIにプロファイル設定を行う
+	_profileStaticApis(profiler);
+}
+
+/**
+ * 静的に（インスタンスを作らずに）使用するAPIにプロファイル設定を行う。
+ *  
+ * @param {Profiler} profiler プロファイラオブジェクト
+ * @returns {undefined}
+ */
+function _profileStaticApis(profiler) {
 	
-	// 除外リスト
-	var exclusionFunctions = [
-		Procedure.Profiler,
-		Procedure.CompatibleLogger
-	];
+	// 除外するAPI
+	var exclusions = {
+		"Procedure.profiler_def.profileLibraries" : true,
+		"Procedure.Profiler" : true,
+		"Procedure.CompatibleLogger" : true,
+		"Procedure.imAppComSearch.services.util.validate_table_fields.DTFColumnConverter" : true
+	};
 	
-	if (Procedure.imAppComSearch) {
-		exclusionFunctions.push(Procedure.imAppComSearch.services.util.validate_table_fields.DTFColumnConverter);
-	}
-	
-	
-	// Procedure・Moduleで定義されたfunctionを再帰的にプロファイル設定する
-	
-	function profileProceduresRecursive(receiver, receiverName) {
+	function profileStaticApisRecursive(receiverName) {
+
+		if (exclusions[receiverName]) {
+			return;
+		}
+		
+		if (eval("typeof " + receiverName + " === 'undefined'")) {
+			return;
+		}
+		
+		var receiver = eval(receiverName);
 	
 		for (var p in receiver) {
 		
 			var func = receiver[p];
+			var funcFullName = receiverName + "." + p;
 			
-			var exclude = false;
-			
-			for (var i = 0; i < exclusionFunctions.length; i++) {
-				if (exclusionFunctions[i] === func) {
-					exclude = true;
-					break;
-				}
-			}
-			
-			if (typeof func === "function" && !exclude) {
+			if (typeof func === "function" &&!exclusions[funcFullName]) {
 				profiler.add(receiver, func, receiverName, p);
 			}
 			
-			if (!exclude) {
-				arguments.callee(func, receiverName + "." + p);
-			}
+			arguments.callee(funcFullName);
 		}
 	}
 	
-	profileProceduresRecursive(Procedure, "Procedure");
-	profileProceduresRecursive(Module, "Module");
+	profileStaticApisRecursive("Procedure");
+	profileStaticApisRecursive("Module");
 	
-	
-	// system-install*.xmlで定義されたAPIにプロファイル設定する
-	
-	function profileApi(apiName) {
-		
-		if (eval("typeof " + apiName)) {
-			profiler.addAll(eval(apiName), apiName);
-		}
-	}
-
-	profileApi("ImJson");
-	profileApi("ImDepartment");
-	profileApi("ImRole");
-	profileApi("ImPost");
-	profileApi("ImPublicGroup");
-	profileApi("ImSelectCondition");
+	// system-install*.xmlで定義されたAPI
+	profileStaticApisRecursive("ImJson");
+	profileStaticApisRecursive("ImDepartment");
+	profileStaticApisRecursive("ImRole");
+	profileStaticApisRecursive("ImPost");
+	profileStaticApisRecursive("ImPublicGroup");
+	profileStaticApisRecursive("ImSelectCondition");
 }

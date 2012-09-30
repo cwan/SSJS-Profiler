@@ -228,7 +228,7 @@ Profiler.prototype.add = function add(receiver, func, receiverName, functionName
 		
 		try {
 			// 元々のfunction実行
-			return func.apply(receiver, Array.prototype.slice.call(arguments));
+			return func.apply(this, Array.prototype.slice.call(arguments));
 			
 		} finally {
 			var elapsedTime = new Date - start;
