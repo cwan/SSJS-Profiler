@@ -44,6 +44,8 @@ function Profiler(name) {
 	this.logger = Procedure.CompatibleLogger.get(this.CONTENT_ID);
 	
 	this.profilerName = name || Web.current();
+	
+	this.stats = {};
 }
 
 /**
@@ -60,15 +62,13 @@ function Profiler(name) {
  */
 Profiler.prototype.getFunctionStats = function getFunctionStats() {
 	 
-	var request = Web.getRequest();
-	
 	var RKEY_FUNCTION_STATS = this.CONTENT_ID + ".functionStats";
 	
-	var functionStats = request.getAttribute(RKEY_FUNCTION_STATS);
+	var functionStats = this.getStats(RKEY_FUNCTION_STATS);
 	
 	if (!functionStats) {
 		functionStats = {};
-		request.setAttribute(RKEY_FUNCTION_STATS, functionStats);
+		this.setStats(RKEY_FUNCTION_STATS, functionStats);
 	}
 	
 	return functionStats;
@@ -83,15 +83,13 @@ Profiler.prototype.getFunctionStats = function getFunctionStats() {
  */
 Profiler.prototype.getStopWatches = function getStopWatches() {
 	
-	var request = Web.getRequest();
-	
 	var RKEY_STOPWATCHES = this.CONTENT_ID + ".stopWatches";
 	
-	var stopWatches = request.getAttribute(RKEY_STOPWATCHES);
+	var stopWatches = this.getStats(RKEY_STOPWATCHES);
 	
 	if (!stopWatches) {
 		stopWatches = {};
-		request.setAttribute(RKEY_STOPWATCHES, stopWatches);
+		this.setStats(RKEY_STOPWATCHES, stopWatches);
 	}
 	
 	return stopWatches;
@@ -580,7 +578,46 @@ Profiler.prototype.reportFinally = function reportFinally(receiver, functionName
 	};
 	
 	return this;
-}
+};
+
+/**
+ * 統計情報を取得する。
+ * HTTPリクエストが使用できる時は、リクエスト属性から取得する。
+ * HTTPリクエストが使用できる時は、Profilerインスタンス内の情報から取得する。
+ * 
+ * @param {String} key キー
+ * @returns {Object} 統計情報。存在しない場合はnullを返す。
+ * 
+ * @since Ver.1.0.4
+ */
+Profiler.prototype.getStats = function getStats(key) {
+	
+	try {
+		return Web.getRequest().getAttribute(key);
+	} catch (e) {
+		return this.stats[key] ? this.stats[key] : null;
+	}
+};
+
+/**
+ * 統計情報を設定する。
+ * HTTPリクエストが使用できる時は、リクエスト属性に設定する。
+ * HTTPリクエストが使用できる時は、Profilerインスタンス内の情報に設定する。
+ * 
+ * @param {String} key キー
+ * @param {Object} value 値
+ * @returns {undefined} 
+ * 
+ * @since Ver.1.0.4
+ */
+Profiler.prototype.setStats = function getStats(key, value) {
+	
+	try {
+		Web.getRequest().setAttribute(key, value);
+	} catch (e) {
+		this.stats[key] = value;
+	}
+};
 
 /**
  * @constructor
