@@ -595,7 +595,7 @@ Profiler.prototype.getStats = function getStats(key) {
 	try {
 		return Web.getRequest().getAttribute(key);
 	} catch (e) {
-		return this.stats[key] ? this.stats[key] : null;
+		return (typeof this.stats[key] !== "undefined") ? this.stats[key] : null;
 	}
 };
 
