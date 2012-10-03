@@ -17,6 +17,7 @@
  * 
  * @see <a href="https://github.com/cwan/SSJS-Profiler">SSJS-Profiler Project</a>
  * @since Ver.1.0.0
+ * @version Ver.1.0.4
  */
 
 /**
@@ -198,6 +199,10 @@ function _profileJavaApis(profiler) {
 		
 		var prototype = eval(receiverName + ".prototype");
 		
+		if (!prototype) {
+			return;
+		}
+		
 		for (var i = 0, functionName; functionName = functionNames[i]; i++) {
 			
 			if (!prototype[functionName]) {
@@ -230,10 +235,17 @@ function _profileJavaApis(profiler) {
 //	// （Webに設定すると無限ループになる？ので除外）
 //	profileStaticApis("Archiver", [ "zip", "unzip" ]);
 //	profileInstancializeApis("BatchManager", [ "exportData", "getExportCategories", "getImportCategories", "importData", "isUpdate", "addBatch", "deleteBatch", "deleteBatches", "getBatch", "getBatches", "getBatchesByIds", "getBatchIds", "updateBatch" ]);
+//	profileInstancializeApis("BatchServer", [ "isConnected", "start", "restart", "stop", "setRefresh", "getRefresh", "isRun", "executeBatchProgram" ]);
 //	profileStaticApis("CSVParser", [ "parse" ]);
 //	profileStaticApis("Client", [ "destroy", "get", "identifier", "keys", "life", "remove", "removeSession", "set", "sleep" ]);
 //	profileStaticApis("Content", [ "executeFunction" ]);
 //	profileInstancializeApis("Content", [ "execute", "isError", "toString", "getFunction" ]);
+//	profileInstancializeApis("DOMAttribute", [ "getName", "getValue", "getParentNode", "toString" ]);
+//	profileInstancializeApis("DOMDocument", [ "getDocumentElement", "getElementsByTagName", "getElementById", "createElement", "createTextNode", "getDoctype", "isError", "getErrorMessage" ]);
+//	profileInstancializeApis("DOMDocumentType", [ "getName", "getPublicId", "getSystemId", "getInternalSubset", "getEntities", "getNotations", "toString" ]);
+//	profileInstancializeApis("DOMEntity", [ "getPublicId", "getSystemId", "toString" ]);
+//	profileInstancializeApis("DOMNode", [ "getName", "getValue", "appendChild", "cloneNode", "getAttribute", "getAttributes", "hasAttribute", "hasAttributes", "hasChildNodes", "getChildNodes", "insertBefore", "normalize", "getParentNode", "getNodeType", "removeAttribute", "removeChild", "replaceChild", "setAttribute", "getTagName", "toString" ]);
+//	profileInstancializeApis("DOMNotation", [ "getPublicId", "getSystemId", "toString" ]);
 //	profileInstancializeApis("DataSourceMappingConfigurater", [ "bindSystemDatabase", "bindLoginGroupDatabase", "rebindSystemDatabase", "rebindLoginGroupDatabase", "unbindSystemDatabase", "unbindLoginGroupDatabase", "getDataSourceMappingInfos", "getSystemDatabaseMappingInfos", "getLoginGroupDatabaseMappingInfos", "getSystemDatabaseMappingInfo", "getLoginGroupDatabaseMappingInfo" ]);
 //	profileStaticApis("DatabaseExport", [ "getMonitor", "downloadCSV", "exportCSV", "setNullValue", "setColumnsInfo", "setSleepInterval", "setDetectionTimeOut", "setExportEncoding", "discontinue", "getExecutingLineNumber", "addCSVHeaderText", "setFieldNames" ]);
 //	profileInstancializeApis("DatabaseExport", [ "execute", "add", "setExportOptionsXmlString", "getExportOptionsXmlString", "setMonitor", "includeImportOptions", "getDefaultExportFileName" ]);
@@ -251,6 +263,7 @@ function _profileJavaApis(profiler) {
 //	profileStaticApis("ImAjaxUtil", [ "setErrorResponseHeaders" ]);
 //	profileInstancializeApis("ImageIconManager", [ "isDuplicateSrc", "setDuplicateSrc", "getGroupImageIcons", "getUserImageIcons", "getImageIcon", "addGroupImageIcon", "addUserImageIcon", "existImageIcon", "existGroupImageIconBySrc", "existUserImageIconBySrc", "deleteGroupImageIcons", "deleteUserImageIcons", "deleteImageIcon", "existGroupImageIcons", "existUserImageIcons", "updateGroupImageIcon", "updateUserImageIcon" ]);
 //	profileStaticApis("Imart", [ "defineType", "execute", "compile", "defineAttribute", "getType", "isType" ]);
+//	profileInstancializeApis("InnerText", [ "execute" ]);
 //	profileInstancializeApis("JsTestSuite", [ "addTest" ]);
 //	profileStaticApis("JsUnit", [ "execute", "loadScriptModule", "assert", "assertTrue", "assertFalse", "assertEquals", "assertNotEquals", "assertNull", "assertNotNull", "assertNaN", "assertNotNaN", "assertUndefined", "assertNotUndefined" ]);
 //	profileStaticApis("Lock", [ "isValid", "begin", "beginRequestScope", "end", "entry", "isLocked" ]);
@@ -261,6 +274,7 @@ function _profileJavaApis(profiler) {
 //	profileStaticApis("ParameterManager", [ "getParameter", "getParameterNames" ]);
 //	profileStaticApis("Permanent", [ "entries" ]);
 //	profileInstancializeApis("Permanent", [ "move", "remove", "get", "set", "extinction", "elements", "keys" ]);
+//	profileInstancializeApis("PluginDescriptor", [ "createInstance", "createNodeInstance", "createInstances", "getGroups", "getId", "getName", "getNode", "getRank", "getTarget", "getVersion", "isBefore", "isEnable", "getXmlString" ]);
 //	profileInstancializeApis("PluginManager", [ "clear", "getPluginDescriptor", "getPluginDescriptors", "getExtensionPoints", "containsPoint" ]);
 //	profileInstancializeApis("ResinDataSourceConfigurater", [ "bind", "rebind", "unbind", "getResinDataSourceInfos", "getResinDataSourceInfo", "connectionConfirm" ]);
 //	profileInstancializeApis("SOAPFault", [ "throwFault" ]);
