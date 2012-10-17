@@ -60,8 +60,10 @@ function profile(request) {
 	
 	// forwardのプロファイル設定
 	weaveIntoForward(profiler, profilerDef);
-
 	
+	// Contentのプロファイル設定
+	weaveIntoContent(profiler, profilerDef);
+
 	// ライブラリのプロファイル設定
 	profilerDef.getFunction("profileLibraries")(profiler);
 	
@@ -119,6 +121,79 @@ function weaveIntoForward(profiler, profilerDef) {
 }
 
 /**
+ * Contentをオーバーライドして、プロファイラの設定を行う。
+ * 
+ * @param {Profiler} profiler
+ * @param {Content} profilerDef
+ * @returns {undefined}
+ * @since 1.0.4
+ */
+function weaveIntoContent(profiler, profilerDef) {
+	
+	if (Content.__profiler_weaved__) {
+		return;
+	}
+	
+	// コンストラクタ引数を getFuncion などから参照できるように、
+	// Content完全に作りかえる。
+
+	// コンストラクタ
+	this.__proto__.Content = function(srcPath) {
+		this.srcPath = srcPath;
+	};
+	
+	this.__proto__.Content.__profiler_weaved__ = true;
+	
+	// execute
+	this.__proto__.Content.prototype.execute = function execute(request) {
+		
+		return executeAndProfile(profiler, profilerDef, this.srcPath, request, true);
+	};
+	
+	// executeFunction
+	this.__proto__.Content.executeFunction = function executeFunction() {
+	
+		var args = Array.prototype.slice.call(arguments);
+		var path = args[0];
+		var functionName = args[1];
+		var funcArgs = [];
+		
+		if (args.length >= 3) {
+			for (var i = 2; i < args.length; i++) {
+				funcArgs[i - 2] = args[i];
+			}
+		}
+		
+		var scriptScope = getScriptScope(profiler, profilerDef, path);
+		return scriptScope[functionName].apply(this, funcArgs);
+	};
+	
+	// getFunction
+	this.__proto__.Content.prototype.getFunction = function getFunction(functionName) {
+		
+		var scriptScope = getScriptScope(profiler, profilerDef, this.srcPath);
+		return scriptScope[functionName];
+	};
+	
+	// isError
+	this.__proto__.Content.prototype.isError = function isError() {
+		
+		try {
+			$javaClass.JSSPViewBuilder.getBuilder().getComposition(this.srcPath);
+			return false;
+			
+		} catch (e) {
+			return true;
+		}
+	};
+	
+	// toString
+	this.__proto__.Content.prototype.toString = function toString() {
+		return this.srcPath;
+	};
+}
+
+/**
  * im_actionにプロファイラを設定して実行する。
  * 
  * @param {Request} request リクエストオブジェクト
@@ -135,15 +210,32 @@ function executeAndProfileAction(request, profiler, profilerDef) {
 		return;
 	}
 	
-	var imActive = request.im_active ? request.im_active.replace(/\(2f\)/g, "/").replace(/\(5f\)/g, "_") : null;
+	var imActive = request.im_active ? 
+					request.im_active.replace(/\(2f\)/g, "/").replace(/\(5f\)/g, "_") : 
+					null;
 	
-	var path = imActive || currentPath;
+	var scriptScope = getScriptScope(profiler, profilerDef, imActive || currentPath);
+	
+	scriptScope[imAction](request);
+}
+
+/**
+ * プロファイラ設定済みのScriptScopeオブジェクトを取得する。
+ * 
+ * @param {Profiler} profiler
+ * @param {Content} profilerDef
+ * @param {String} path
+ * @returns {ScriptScope}
+ */
+function getScriptScope(profiler, profilerDef, path) {
 	
 	var scriptScope = $javaClass.JSSPScriptBuilder.getBuilder().getScriptScope(path);
 	
-	profiler.addAllExclude(scriptScope, getExcludeFunctions(profilerDef, path), path);
+	if (path !== "profiler_def") {
+		profiler.addAllExclude(scriptScope, getExcludeFunctions(profilerDef, path), path);
+	}
 	
-	scriptScope[imAction](request);
+	return scriptScope;
 }
 
 /**
@@ -171,22 +263,22 @@ function getExcludeFunctions(profilerDef, path) {
 }
 
 /**
- * pathを実行し、プロファイルを行う。また、結果をレスポンスに書き出す。
+ * pathを実行し、プロファイルを行う。
  *
  * @param {Profiler} profiler プロファイラオブジェクト
  * @param {Object} profilerDef プロファイラ対象定義オブジェクト
  * @param {String} path JSSPパス（拡張子は含まない）
  * @param {Array<Object>} args pathの引数
+ * @param {boolean} returnText trueの場合、実行結果のHTMLを文字列で返却する。falseの場合は、結果をレスポンスに書き出す。
  * @returns {undefined}
  */
-function executeAndProfile(profiler, profilerDef, path, args) {
+function executeAndProfile(profiler, profilerDef, path, args, returnText) {
 	
 	var ctx = $javaClass.Context.getCurrentContext();
 	
 	if (existsJsSource(path)) {
-		var scriptScope = $javaClass.JSSPScriptBuilder.getBuilder().getScriptScope(path);
 		
-		profiler.addAllExclude(scriptScope, getExcludeFunctions(profilerDef, path), path);
+		var scriptScope = getScriptScope(profiler, profilerDef, path);
 		
 		if ($javaClass.ScriptableObject.hasProperty(scriptScope, "init")) {
 			
@@ -203,6 +295,10 @@ function executeAndProfile(profiler, profilerDef, path, args) {
 		
 		try {
 			var html = view.execute(ctx, scriptScope || new $javaClass.ScriptScope());
+			
+			if (returnText) {
+				return html;
+			}
 			
 			Web.getHTTPResponse().sendMessageBodyString(html);
 			

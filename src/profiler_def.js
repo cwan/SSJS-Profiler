@@ -232,15 +232,13 @@ function _profileJavaApis(profiler) {
 	}
 	
 //	// アプリケーション共通モジュール API
-//	// （Webに設定すると無限ループになるので除外）
+//	// ※ WebとContentは、session.jsで変更しているので除外
 //	profileStaticApis("Archiver", [ "zip", "unzip" ]);
 //	profileInstancializeApis("BatchManager", [ "exportData", "getExportCategories", "getImportCategories", "importData", "isUpdate", "addBatch", "deleteBatch", "deleteBatches", "getBatch", "getBatches", "getBatchesByIds", "getBatchIds", "updateBatch" ]);
 //	profileInstancializeApis("BatchServer", [ "isConnected", "start", "restart", "stop", "setRefresh", "getRefresh", "isRun", "executeBatchProgram" ]);
 //	profileStaticApis("CSVParser", [ "parse" ]);
 //	profileStaticApis("Client", [ "destroy", "get", "identifier", "keys", "life", "remove", "removeSession", "set", "sleep" ]);
 //	profileStaticApis("Constant", [ "define", "load" ]);
-//	profileStaticApis("Content", [ "executeFunction" ]);
-//	profileInstancializeApis("Content", [ "execute", "isError", "toString", "getFunction" ]);
 //	profileInstancializeApis("DOMAttribute", [ "getName", "getValue", "getParentNode", "toString" ]);
 //	profileInstancializeApis("DOMDocument", [ "getDocumentElement", "getElementsByTagName", "getElementById", "createElement", "createTextNode", "getDoctype", "isError", "getErrorMessage" ]);
 //	profileInstancializeApis("DOMDocumentType", [ "getName", "getPublicId", "getSystemId", "getInternalSubset", "getEntities", "getNotations", "toString" ]);
@@ -530,7 +528,7 @@ function _profileJavaApis(profiler) {
 //	profileInstancializeApis("UpdateManager", [ "getKeys", "getLastModified", "isUpDate", "modify", "removeAll", "remove" ]);
 //
 //	// iAP Platform
-//	// （Webに設定すると無限ループになるので除外）
+//	// ※ WebとContentは、session.jsで変更しているので除外
 //	profileInstancializeApis("WorkManager", [ "addParallelizedTask", "addSerializedTaskQueue", "addSerializedTask", "getRegisteredInfo", "releaseRunningParallelizedTask", "releaseRunningSerializedTask", "removeParallelizedTask", "removeSerializedTaskQueue", "removeSerializedTask", "setParallelizedTaskQueueActive", "setSerializedTaskQueueActive", "stopRunningParallelizedTask", "stopRunningSerializedTask" ]);
 //	profileInstancializeApis("Cache", [ "get", "put", "removeAll", "remove" ]);
 //	profileInstancializeApis("DatabaseMetaData", [ "getDatabaseMajorVersion", "getDatabaseMinorVersion", "getDatabaseProductName", "getDatabaseProductVersion", "getDriverMajorVersion", "getDriverMinorVersion", "getDriverName", "getDriverVersion", "getSearchStringEscape" ]);
@@ -548,8 +546,6 @@ function _profileJavaApis(profiler) {
 //	profileStaticApis("Archiver", [ "zip", "unzip" ]);
 //	profileStaticApis("Client", [ "destroy", "get", "identifier", "keys", "life", "remove", "removeSession", "set", "sleep" ]);
 //	profileInstancializeApis("Constant", [ "define", "load" ]);
-//	profileStaticApis("Content", [ "executeFunction" ]);
-//	profileInstancializeApis("Content", [ "execute", "isError", "toString", "getFunction" ]);
 //	profileStaticApis("CSVParser", [ "parse" ]);
 //	profileStaticApis("Debug", [ "browse", "print", "write", "console" ]);
 //	profileInstancializeApis("DOMAttribute", [ "getName", "getValue", "getParentNode", "toString" ]);
