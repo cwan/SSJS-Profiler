@@ -58,62 +58,92 @@ function profile(request) {
 	var profiler = new Procedure.Profiler(currentPath);
 	var profilerDef = new Content("profiler_def");
 	
-
-	// forwardのオーバーライド
-	if (typeof this.__proto__.__original_forward === "undefined") {
-		
-		this.__proto__.__original_forward = this.__proto__.forward;
-		
-		this.__proto__.forward = function(path, args) {
-			
-			if (isProfiled(profilerDef, path)) {
-				
-				// Web.current()が返すパスを変更
-				var originalWebCurrent = Web.current;
-				
-				try {
-					Web.current = function() {
-						return path;
-					}
-					
-					// 疑似foward実行
-					executeAndProfile(profiler, profilerDef, path, args);
-					
-				} finally {
-					Web.current = originalWebCurrent;
-				}
-				
-			} else {
-				__original_forward(path, args);
-			}
-		}
-	}
+	// forwardのプロファイル設定
+	weaveIntoForward(profiler, profilerDef);
 
 	
 	// ライブラリのプロファイル設定
 	profilerDef.getFunction("profileLibraries")(profiler);
 	
 	
-	if (isProfiled(profilerDef, currentPath)) {
-		
-		// im_actionの処理
-		var imAction = request.im_action;
-		var imActive = request.im_active ? request.im_active.replace(/\(2f\)/g, "/").replace(/\(5f\)/g, "_") : null;
-		
-		if (imAction) {
-			
-			var path = imActive || currentPath;
-			
-			var scriptScope = $javaClass.JSSPScriptBuilder.getBuilder().getScriptScope(path);
-			
-			profiler.addAllExclude(scriptScope, getExcludeFunctions(profilerDef, path), path);
-			
-			scriptScope[imAction](request);
-		}
-		
-		// initの処理
-		executeAndProfile(profiler, profilerDef, currentPath, request);
+	if (!isProfiled(profilerDef, currentPath)) {
+		return;
 	}
+		
+	// im_actionの処理
+	executeAndProfileAction(request, profiler, profilerDef);
+	
+	// initの処理
+	executeAndProfile(profiler, profilerDef, currentPath, request);
+}
+
+/**
+ * forward関数をオーバーライドして、プロファイラの設定を行う。
+ * 
+ * @param {Profiler} profiler
+ * @param {Content} profilerDef
+ * @returns {undefined}
+ * @since 1.0.4
+ */
+function weaveIntoForward(profiler, profilerDef) {
+	
+	if (typeof this.__proto__.__original_forward !== "undefined") {
+		return;
+	}
+		
+	this.__proto__.__original_forward = this.__proto__.forward;
+	
+	this.__proto__.forward = function(path, args) {
+		
+		if (isProfiled(profilerDef, path)) {
+			
+			// Web.current()が返すパスを変更
+			var originalWebCurrent = Web.current;
+			
+			try {
+				Web.current = function() {
+					return path;
+				}
+				
+				// 疑似foward実行
+				executeAndProfile(profiler, profilerDef, path, args);
+				
+			} finally {
+				Web.current = originalWebCurrent;
+			}
+			
+		} else {
+			__original_forward(path, args);
+		}
+	}
+}
+
+/**
+ * im_actionにプロファイラを設定して実行する。
+ * 
+ * @param {Request} request リクエストオブジェクト
+ * @param {Profiler} profiler
+ * @param {Content} profilerDef
+ * @returns {undefined}
+ * @since 1.0.4
+ */
+function executeAndProfileAction(request, profiler, profilerDef) {
+
+	var imAction = request.im_action;
+	
+	if (!imAction) {
+		return;
+	}
+	
+	var imActive = request.im_active ? request.im_active.replace(/\(2f\)/g, "/").replace(/\(5f\)/g, "_") : null;
+	
+	var path = imActive || currentPath;
+	
+	var scriptScope = $javaClass.JSSPScriptBuilder.getBuilder().getScriptScope(path);
+	
+	profiler.addAllExclude(scriptScope, getExcludeFunctions(profilerDef, path), path);
+	
+	scriptScope[imAction](request);
 }
 
 /**
