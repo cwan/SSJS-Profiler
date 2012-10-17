@@ -16,9 +16,14 @@
  * @fileOverview intra-mart SSJS (Server Side JavaScript) のプロファイラ。
  * 
  * @see <a href="https://github.com/cwan/SSJS-Profiler">SSJS-Profiler Project</a>
- * @since Ver.1.0.0
+ * @since 1.0.0
+ * @version 1.0.4
  */
 
+var CONTENT_ID = "profiler";
+var RKEY_FUNCTION_STATS = CONTENT_ID + ".functionStats";
+var RKEY_STOPWATCHES = CONTENT_ID + ".stopWatches";
+	
 /**
  * Profilerクラスの定義を行う。
  * 
@@ -34,14 +39,21 @@ function init() {
 }
 
 /**
+ * ロガーオブジェクトを取得する。
+ * 
+ * @returns {CompatibleLogger}
+ */
+function getLogger() {
+	return Procedure.CompatibleLogger.get(CONTENT_ID)
+}
+
+/**
  * @constructor
  * @param {String} name プロファイラ名。省略時はWeb.current()が適用される。
  */
 function Profiler(name) {
 	
-	this.CONTENT_ID = "profiler";
-	
-	this.logger = Procedure.CompatibleLogger.get(this.CONTENT_ID);
+	this.effective = getLogger().isInfoEnabled();
 	
 	this.profilerName = name || Web.current();
 	
@@ -62,8 +74,6 @@ function Profiler(name) {
  */
 Profiler.prototype.getFunctionStats = function getFunctionStats() {
 	 
-	var RKEY_FUNCTION_STATS = this.CONTENT_ID + ".functionStats";
-	
 	var functionStats = this.getStats(RKEY_FUNCTION_STATS);
 	
 	if (!functionStats) {
@@ -82,8 +92,6 @@ Profiler.prototype.getFunctionStats = function getFunctionStats() {
  *   値 : {StopWatch} ストップウォッチオブジェクト
  */
 Profiler.prototype.getStopWatches = function getStopWatches() {
-	
-	var RKEY_STOPWATCHES = this.CONTENT_ID + ".stopWatches";
 	
 	var stopWatches = this.getStats(RKEY_STOPWATCHES);
 	
@@ -104,7 +112,7 @@ Profiler.prototype.getStopWatches = function getStopWatches() {
  */
 Profiler.prototype.addAll =	function addAll(receiver, receiverName) {
 	 
-	if (!this.logger.isInfoEnabled()) {
+	if (!this.effective) {
 		return this;
 	}
 		
@@ -121,12 +129,12 @@ Profiler.prototype.addAll =	function addAll(receiver, receiverName) {
  */
 Profiler.prototype.addAllExclude = function addAllExclude(receiver, excludeFunctions, receiverName) {
 	
-	if (!this.logger.isInfoEnabled()) {
+	if (!this.effective) {
 		return this;
 	}
 	
 	if (!receiver) {
-		this.logger.error("An argument 'receiver' of Profiler#addAllExclude is invalid. ({})", receiverName);
+		getLogger().error("An argument 'receiver' of Profiler#addAllExclude is invalid. ({})", receiverName);
 		return this;
 	}
 	
@@ -181,21 +189,21 @@ Profiler.prototype.addAllExclude = function addAllExclude(receiver, excludeFunct
  */
 Profiler.prototype.add = function add(receiver, func, receiverName, functionName) {
 	
-	if (!this.logger.isInfoEnabled()) {
+	if (!this.effective) {
 		return this;
 	}
 		
 	if (!receiver) {
-		this.logger.error("An argument 'receiver' of Profiler#add is invalid. ({})", receiverName);
+		getLogger().error("An argument 'receiver' of Profiler#add is invalid. ({})", receiverName);
 		return this;
 	}
 	
 	if (!func) {
-		this.logger.error("An argument 'func' of Profiler#add is invalid. ({})", receiverName);
+		getLogger().error("An argument 'func' of Profiler#add is invalid. ({})", receiverName);
 		return this;
 		
 	} else if (typeof func !== "function") {
-		this.logger.error("An argument 'func' of Profiler#add is not a function. ({})", receiverName);
+		getLogger().error("An argument 'func' of Profiler#add is not a function. ({})", receiverName);
 		return this;
 	}
 	
@@ -268,7 +276,7 @@ Profiler.prototype.stopWatch =
 Profiler.prototype.sw =	function sw(stopWatchName, fnTarget) {
 	
 	if (!stopWatchName) {
-		this.logger.error("An argument of stopWatch is invalid.");
+		getLogger().error("An argument of stopWatch is invalid.");
 		return {};
 	}
 	
@@ -277,7 +285,7 @@ Profiler.prototype.sw =	function sw(stopWatchName, fnTarget) {
 	var objStopWatch = stopWatches[stopWatchName];
 	
 	if (!objStopWatch) {
-		objStopWatch = new StopWatch(stopWatchName, this.logger);
+		objStopWatch = new StopWatch(stopWatchName);
 		stopWatches[stopWatchName] = objStopWatch;
 	}
 	
@@ -305,7 +313,7 @@ Profiler.prototype.sw =	function sw(stopWatchName, fnTarget) {
  */
 Profiler.prototype.report = function report(delimiter) {
 	
-	if (!this.logger.isInfoEnabled()) {
+	if (!this.effective) {
 		return;
 	}
 	
@@ -470,7 +478,7 @@ Profiler.prototype.report = function report(delimiter) {
 		
 	}
 	
-	this.logger.info(buf.join(""));
+	getLogger().info(buf.join(""));
 };
 
 /**
@@ -478,7 +486,7 @@ Profiler.prototype.report = function report(delimiter) {
  */
 Profiler.prototype.hasReport = function hasReport() {
 	
-	if (!this.logger.isInfoEnabled()) {
+	if (!this.effective) {
 		return false;
 	}
 	
@@ -502,12 +510,12 @@ Profiler.prototype.hasReport = function hasReport() {
  */
 Profiler.prototype.reportOnClose = function reportOnClose(receiver, delimiter) {
 	
-	if (!this.logger.isInfoEnabled()) {
+	if (!this.effective) {
 		return this;
 	}
 	
 	if (!receiver) {
-		this.logger.error("An argument of reportOnClose is invalid.");
+		getLogger().error("An argument of reportOnClose is invalid.");
 		return this;
 	}
 	
@@ -548,19 +556,19 @@ Profiler.prototype.reportOnClose = function reportOnClose(receiver, delimiter) {
  */
 Profiler.prototype.reportFinally = function reportFinally(receiver, functionName, delimiter) {
 	
-	if (!this.logger.isInfoEnabled()) {
+	if (!this.effective) {
 		return this;
 	}
 	
 	if (!receiver) {
-		this.logger.error("An argument 'receiver' of reportFinally is invalid.");
+		getLogger().error("An argument 'receiver' of reportFinally is invalid.");
 		return this;
 	}
 	
 	var func = receiver[functionName];
 	
 	if (!func || typeof func !== "function") {
-		this.logger.error("An argument 'func' of reportFinally is invalid.");
+		getLogger().error("An argument 'func' of reportFinally is invalid.");
 		return this;
 	}
 	
@@ -623,13 +631,12 @@ Profiler.prototype.setStats = function getStats(key, value) {
  * @constructor
  * @param {String} stopWatchName ストップウォッチの識別名
  */
-function StopWatch(stopWatchName, logger) {
+function StopWatch(stopWatchName) {
 
 	this.stopWatchName = stopWatchName;
 	this.count = 0;
 	this.elapsedTime = 0;
 	this.startTime = -1;
-	this.logger = logger;
 }
 
 /**
@@ -639,7 +646,7 @@ function StopWatch(stopWatchName, logger) {
 StopWatch.prototype.start = function() {
 
 	if (this.startTime >= 0) {
-		this.logger.error("StopWatch({})#start is called without stop.", this.stopWatchName);
+		getLogger().error("StopWatch({})#start is called without stop.", this.stopWatchName);
 		return;
 	}
 
@@ -653,7 +660,7 @@ StopWatch.prototype.start = function() {
 StopWatch.prototype.stop = function() {
 
 	if (this.startTime < 0) {
-		this.logger.error("StopWatch({})#stop is called without start.", this.stopWatchName);
+		getLogger().error("StopWatch({})#stop is called without start.", this.stopWatchName);
 		return;
 	}
 

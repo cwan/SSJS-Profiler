@@ -16,7 +16,8 @@
  * @fileOverview バージョン互換性のあるロガークラス。
  * 
  * @see <a href="https://github.com/cwan/SSJS-Profiler">SSJS-Profiler Project</a>
- * @since Ver.1.0.1
+ * @since 1.0.1
+ * @version 1.0.4
  */
 
 /**

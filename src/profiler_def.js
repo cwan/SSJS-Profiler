@@ -16,8 +16,8 @@
  * @fileOverview パスや関数がプロファイル対象とするかどうかが定義される。
  * 
  * @see <a href="https://github.com/cwan/SSJS-Profiler">SSJS-Profiler Project</a>
- * @since Ver.1.0.0
- * @version Ver.1.0.4
+ * @since 1.0.0
+ * @version 1.0.4
  */
 
 /**

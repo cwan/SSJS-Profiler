@@ -19,7 +19,8 @@
  *    全ての *.jssp, *.jssps リクエストの前に実行される。（*.jssprpcでは実行されない）
  * 
  * @see <a href="https://github.com/cwan/SSJS-Profiler">SSJS-Profiler Project</a>
- * @since Ver.1.0.0
+ * @since 1.0.0
+ * @version 1.0.4
  */
 
 include("profiler");
