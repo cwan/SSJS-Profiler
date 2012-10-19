@@ -7,8 +7,8 @@ function 単位の実行回数および処理時間の合計を調べること�
 
 **ダウンロード**
 
-- [master](/cwan/SSJS-Profiler/zipball/master)
-- [tags](/cwan/SSJS-Profiler/tags)
+- [master](/cwan/SSJS-Profiler/zipball/master) : 最新（β版）
+- [tags](/cwan/SSJS-Profiler/tags) : 過去バージョン
 
 ## 1. 設定方法
 
@@ -256,12 +256,14 @@ profiler_def.js を編集し、プロファイルの取得が不要な API や�
  1. ライブラリ（Procedure や Module、Java で実装された API 等）に対してプロファイラを適用した場合、Application Runtime を再起動するまでプロファイラが適用されたままになります。
  1. IMART タグのプロファイルを自動的に取得することはできません。（タグの実装に直接プロファイルのソースを記述する方法ならば可能）
  1. 非同期処理内では HTTP リクエストオブジェクトを参照できないため、プロファイラ統計のスコープは Profiler インスタンスになります（Profiler インスタンスを跨って集計することはできません）。
+ 1. IMBox の API に対して、プロファイラを設定することはできません。（prototype にアクセスできないため）
 
 ## 4. 動作環境
 
  - intra-mart WebPlatform 6.1, 7.2
- - IM-共通マスタ 7.2
- - IM-Workflow 7.2
+ - intra-mart Accel Platform 2012 Autumn(Alba / 8.0)
+ - IM-共通マスタ 7.2, 8.0
+ - IM-Workflow 7.2, 8.0
  - Intranet Startpack 6.1, 7.1
 
 **備考**
@@ -270,9 +272,15 @@ profiler_def.js を編集し、プロファイルの取得が不要な API や�
 
 ## 5. ライセンス
 
-[Apache License, Version 2.0](https://github.com/cwan/SSJS-Profiler/blob/master/LICENSE.txt)
+[Apache License, Version 2.0](/cwan/SSJS-Profiler/blob/master/LICENSE.txt)
 
 ## 6. 更新履歴
+
+### Ver.1.0.4 (2012-10-19)
+- [#8 intra-mart Accel Platform (Ver.8.0) に対応](/cwan/SSJS-Profiler/issues/8)
+- [#9 非同期処理時に Web.getRequest() で NullPointerException が発生する不具合を修正](/cwan/SSJS-Profiler/issues/9)
+- [#10 Content の executeFunction, execute, getFunction によって実行された場合もプロファイルを行うようにした](/cwan/SSJS-Profiler/issues/10)
+- [#11 Profiler オブジェクトがシリアライズされるときにエラーになる問題を修正](/cwan/SSJS-Profiler/issues/11)
 
 ### Ver.1.0.3 (2012-10-01)
 - [#5 intra-mart Ver.6.x でレポートが system.log に出力されない不具合を修正](/cwan/SSJS-Profiler/issues/5)
