@@ -8,7 +8,7 @@ function 単位の実行回数および処理時間の合計を調べること�
 **ダウンロード**
 
 - [master](/cwan/SSJS-Profiler/zipball/master) : 最新（β版）
-- [tags](/cwan/SSJS-Profiler/tags) : 過去バージョン
+- [tags](/cwan/SSJS-Profiler/tags) : 過去バージョン（安定板）
 
 ## 1. 設定方法
 
