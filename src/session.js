@@ -66,11 +66,6 @@ function profile(request) {
 
 	// ライブラリのプロファイル設定
 	profilerDef.getFunction("profileLibraries")(profiler);
-	
-	
-	if (!isProfiled(profilerDef, currentPath)) {
-		return;
-	}
 		
 	// im_actionの処理
 	executeAndProfileAction(request, profiler, profilerDef);
@@ -231,7 +226,7 @@ function getScriptScope(profiler, profilerDef, path) {
 	
 	var scriptScope = $javaClass.JSSPScriptBuilder.getBuilder().getScriptScope(path);
 	
-	if (path !== "profiler_def") {
+	if (path !== "profiler_def" && isProfiled(profilerDef, path)) {
 		profiler.addAllExclude(scriptScope, getExcludeFunctions(profilerDef, path), path);
 	}
 	
@@ -345,10 +340,24 @@ function existsJsSource(path) {
  */
 function close() {
 	
-	var profiler = new Procedure.Profiler(Web.current());
+	var path = Web.current();
+	var profiler = new Procedure.Profiler(path);
 	
-	if (profiler.hasReport()) {
-		// プロファイルレポートをログに書き出す
-		profiler.report();
+	var functionStats = profiler.getFunctionStats();
+	var profilerDef = new Content("profiler_def");
+	
+	for (var f in functionStats) {
+		var stat = functionStats[f];
+		
+		if (!stat.receiverName) {
+			continue;
+		}
+		
+		if (isProfiled(profilerDef, stat.receiverName)) {
+			// プロファイルレポートをログに書き出す
+			profiler.report();
+			
+			break;
+		}
 	}
 }
