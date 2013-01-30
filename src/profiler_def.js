@@ -77,6 +77,7 @@ function getExcludeFunctions(path) {
 	// 正規表現パターン
 	var excludePatterns = {
 		".*" : [ "DTFColumnConverter" ]
+		, "^/?startpack/schedule/sdl_print_private_day_week$" : [ "MetaData" ]
 	};
 	
 	var result = [];
