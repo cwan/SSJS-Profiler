@@ -7,8 +7,8 @@ function 単位の実行回数および処理時間の合計を調べること�
 
 **ダウンロード**
 
-- [master](/cwan/SSJS-Profiler/zipball/master) : 最新（β版）
-- [tags](/cwan/SSJS-Profiler/tags) : 過去バージョン（安定板）
+- [master](https://github.com/cwan/SSJS-Profiler/archive/master.zip) : 最新（β版）
+- [tags](https://github.com/cwan/SSJS-Profiler/tags) : 過去バージョン（安定板）
 
 ## 1. 設定方法
 
@@ -272,27 +272,27 @@ profiler_def.js を編集し、プロファイルの取得が不要な API や�
 
 ## 5. ライセンス
 
-[Apache License, Version 2.0](/cwan/SSJS-Profiler/blob/master/LICENSE.txt)
+[Apache License, Version 2.0](https://github.com/cwan/SSJS-Profiler/blob/master/LICENSE.txt)
 
 ## 6. 更新履歴
 
 ### Ver.1.0.4 (2012-10-19)
-- [#8 intra-mart Accel Platform (Ver.8.0) に対応](/cwan/SSJS-Profiler/issues/8)
-- [#9 非同期処理時に Web.getRequest() で NullPointerException が発生する不具合を修正](/cwan/SSJS-Profiler/issues/9)
-- [#10 Content の executeFunction, execute, getFunction によって実行された場合もプロファイルを行うようにした](/cwan/SSJS-Profiler/issues/10)
-- [#11 Profiler オブジェクトがシリアライズされるときにエラーになる問題を修正](/cwan/SSJS-Profiler/issues/11)
+- [#8 intra-mart Accel Platform (Ver.8.0) に対応](https://github.com/cwan/SSJS-Profiler/issues/8)
+- [#9 非同期処理時に Web.getRequest() で NullPointerException が発生する不具合を修正](https://github.com/cwan/SSJS-Profiler/issues/9)
+- [#10 Content の executeFunction, execute, getFunction によって実行された場合もプロファイルを行うようにした](https://github.com/cwan/SSJS-Profiler/issues/10)
+- [#11 Profiler オブジェクトがシリアライズされるときにエラーになる問題を修正](https://github.com/cwan/SSJS-Profiler/issues/11)
 
 ### Ver.1.0.3 (2012-10-01)
-- [#5 intra-mart Ver.6.x でレポートが system.log に出力されない不具合を修正](/cwan/SSJS-Profiler/issues/5)
-- [#6 jsspRpc や IM-Workflow のアクション処理などのプロファイルを比較的簡単に取得する方法を追加（Profiler.reportFinally 追加）](/cwan/SSJS-Profiler/issues/6)
-- [#7 Java で実装された API のプロファイルを取得できるようにした](/cwan/SSJS-Profiler/issues/7)
+- [#5 intra-mart Ver.6.x でレポートが system.log に出力されない不具合を修正](https://github.com/cwan/SSJS-Profiler/issues/5)
+- [#6 jsspRpc や IM-Workflow のアクション処理などのプロファイルを比較的簡単に取得する方法を追加（Profiler.reportFinally 追加）](https://github.com/cwan/SSJS-Profiler/issues/6)
+- [#7 Java で実装された API のプロファイルを取得できるようにした](https://github.com/cwan/SSJS-Profiler/issues/7)
 
 ### Ver.1.0.2 (2012-09-22)
-- [#2 無名関数に対応](/cwan/SSJS-Profiler/issues/2)
-- [#4 全角文字が含まれるとレポートの桁ぞろえがずれる不具合を修正](/cwan/SSJS-Profiler/issues/4)
+- [#2 無名関数に対応](https://github.com/cwan/SSJS-Profiler/issues/2)
+- [#4 全角文字が含まれるとレポートの桁ぞろえがずれる不具合を修正](https://github.com/cwan/SSJS-Profiler/issues/4)
 
 ### Ver.1.0.1 (2012-09-18)
-- [#1 Ver.6.x に対応](/cwan/SSJS-Profiler/issues/1)
+- [#1 Ver.6.x に対応](https://github.com/cwan/SSJS-Profiler/issues/1)
 
 ### Ver.1.0.0 (2012-09-09)
 - 初期リリース
