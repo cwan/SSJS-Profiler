@@ -102,7 +102,7 @@ session.js と profiler_def.js を使用すると、プロファイラの設定�
     
     // 特定オブジェクトのすべての function をプロファイル対象とするならば、addAll を使用する
     // 第1引数: レシーバオブジェクト、第2引数: ログ出力時の判別に使用するレシーバ名（オプション）
-    profiler.addAdd(this, Web.current());
+    profiler.addAll(this, Web.current());
     
     // 特定の function だけプロファイル対象とするならば、add を使用する
     // 第1引数: レシーバオブジェクト、第2引数: function、第3引数: ログ出力時の判別に使用するレシーバ名（オプション）、
