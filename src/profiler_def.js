@@ -140,7 +140,13 @@ function _profileJsApis(profiler) {
 		"Procedure.profiler_def.profileLibraries" : true,
 		"Procedure.Profiler" : true,
 		"Procedure.CompatibleLogger" : true,
-		"Procedure.imAppComSearch.services.util.validate_table_fields.DTFColumnConverter" : true
+		"Procedure.imAppComSearch.services.util.validate_table_fields.DTFColumnConverter" : true,
+		"Module.download.RESPONSE_UTIL" : true,
+		"Module.download.HTTP_CONTEXT_MANAGER" : true,
+		"Module.download.SERVER_CONTEXT" : true,
+		"Module.download.__RESPONSE_UTIL__" : true,
+		"Module.download.__HTTP_CONTEXT_MANAGER__" : true,
+		"Module.download.__SERVER_CONTEXT__" : true
 	};
 	
 	function profileStaticApisRecursive(receiverName) {
